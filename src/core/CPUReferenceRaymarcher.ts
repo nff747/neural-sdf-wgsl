@@ -33,7 +33,7 @@ export class CPUReferenceRaymarcher {
       const d = res.distance;
       lastMat = res.materialId;
 
-      if (d < epsilon) {
+      if (Math.abs(d) < epsilon) {
         const normal = SDFMath.calcTetrahedronNormal((x, y, z) => mapFn(x, y, z).distance, px, py, pz, epsilon);
         return {
           hit: true,
@@ -47,8 +47,15 @@ export class CPUReferenceRaymarcher {
 
       if (t > maxDistance) break;
 
-      t += d * omega;
+      // If over-relaxation overshot inside (d < 0), retreat to surface
+      if (d < 0.0) {
+        t += d; // retreat backwards
+      } else {
+        // Step with relaxation factor
+        t += d * (d > 0.1 ? omega : 1.0);
+      }
     }
+
 
     return {
       hit: false,
