@@ -16,3 +16,4 @@ export { sdfPrimitivesShader } from './shaders/sdfPrimitives.wgsl';
 export { sdfOperatorsShader } from './shaders/sdfOperators.wgsl';
 export { sdfNormalsShader } from './shaders/sdfNormals.wgsl';
 export { sdfRaymarchShader } from './shaders/sdfRaymarch.wgsl';
+export * from './utils/sdfPrimitives';
