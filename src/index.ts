@@ -9,6 +9,8 @@ export * from './utils/math';
 export * from './core/SDFScene';
 export * from './core/SDFRenderer';
 export * from './core/CPUReferenceRaymarcher';
+export * from './core/ThreeSDFMaterial';
+
 
 export { sdfPrimitivesShader } from './shaders/sdfPrimitives.wgsl';
 export { sdfOperatorsShader } from './shaders/sdfOperators.wgsl';
