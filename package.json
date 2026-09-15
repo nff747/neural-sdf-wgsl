@@ -1,0 +1,38 @@
+{
+  "name": "neural-sdf-wgsl",
+  "version": "1.0.0",
+  "description": "Real-Time Neural Signed Distance Field (SDF) Raymarcher & Dynamic CSG Boolean Engine in WebGPU / WGSL",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "benchmark": "npx tsx scripts/benchmark.ts"
+  },
+  "keywords": [
+    "webgpu",
+    "wgsl",
+    "sdf",
+    "signed-distance-field",
+    "raymarching",
+    "sphere-tracing",
+    "csg",
+    "boolean-engine",
+    "threejs",
+    "ambient-occlusion",
+    "soft-shadows",
+    "procedural"
+  ],
+  "author": "nff747 <nff747@users.noreply.github.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  },
+  "peerDependencies": {
+    "@webgpu/types": "^0.1.40"
+  }
+}
