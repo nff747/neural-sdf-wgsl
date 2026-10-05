@@ -8,7 +8,7 @@
 [![WGSL](https://img.shields.io/badge/Shading-WGSL-ff007f?style=for-the-badge)](https://www.w3.org/TR/WGSL/)
 [![Sphere Tracing](https://img.shields.io/badge/Raymarching-Over--Relaxed_ω=1.4-00ff88?style=for-the-badge)](https://jcgt.org/published/0003/02/01/)
 [![Normal Estimation](https://img.shields.io/badge/Normals-Tetrahedron_4--Point-purple?style=for-the-badge)](https://iquilezles.org/articles/normalsSDF/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-Apache_2.0-blue?style=for-the-badge)](LICENSE)
 
 ---
 
@@ -151,4 +151,4 @@ neural-sdf-wgsl/
 
 ## 📜 License
 
-MIT License © 2026 nff747. Open-sourced under the MIT License.
+Apache License 2.0 © 2026 nff747. Open-sourced under the Apache License, Version 2.0.
