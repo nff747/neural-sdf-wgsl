@@ -3,6 +3,7 @@ import {
   SDFMath,
   CPUReferenceRaymarcher,
   SDFScene,
+  ThreeSDFMaterial,
   sdfPrimitivesShader,
   sdfOperatorsShader,
   sdfNormalsShader,
@@ -187,16 +188,12 @@ describe('Ambient Occlusion Tracing', () => {
     const n: [number, number, number] = [0, 1, 0];
 
     const ao = CPUReferenceRaymarcher.calcAmbientOcclusion(mapFn, p, n);
-    // On a purely convex sphere, distance along normal is greater than or equal to sample distance,
-    // so ambient occlusion factor should be 1.0 (unoccluded)
     expect(ao).toBeCloseTo(1.0, 2);
   });
 
   it('should decrease ambient occlusion factor inside concavities or narrow crevice', () => {
-    // Two close parallel planes at x = -0.05 and x = 0.05
     const mapFn = (x: number, _y: number, _z: number) => Math.max(-x - 0.05, x - 0.05);
 
-    // Deep in the crevice at x = 0, facing upwards (0, 1, 0)
     const p: [number, number, number] = [0, 0, 0];
     const n: [number, number, number] = [0, 1, 0];
 
@@ -215,7 +212,6 @@ describe('SDFScene Bounding Sphere Acceleration', () => {
     expect(bs.center[0]).toBeCloseTo(0.0, 5);
     expect(bs.center[1]).toBeCloseTo(0.0, 5);
     expect(bs.center[2]).toBeCloseTo(0.0, 5);
-    // Extents are from -3 to +3, so bounding radius must be >= 3.0
     expect(bs.radius).toBeGreaterThanOrEqual(3.0);
   });
 
@@ -224,12 +220,49 @@ describe('SDFScene Bounding Sphere Acceleration', () => {
     scene.add('box', { type: 'box', position: [0, 0, 0], halfExtents: [1, 1, 1] });
     const bs = scene.computeBoundingSphere();
 
-    // Ray pointing directly at sphere center from z = 10
     const hitRay = scene.intersectsRay([0, 0, 10], [0, 0, -1], bs);
     expect(hitRay).toBe(true);
 
-    // Ray pointing completely away from sphere
     const missRay = scene.intersectsRay([0, 0, 10], [1, 0, 0], bs);
     expect(missRay).toBe(false);
+  });
+});
+
+describe('ThreeSDFMaterial Shader Definition and Uniform Packing', () => {
+  it('should initialize uniforms with provided parameters', () => {
+    const def = ThreeSDFMaterial.createShaderDefinition({
+      time: 1.5,
+      resolution: [1920, 1080],
+      omega: 1.2,
+      shadowSoftness: 16.0,
+    });
+
+    expect(def.uniforms.uTime.value).toBe(1.5);
+    expect(def.uniforms.uResolution.value).toEqual([1920, 1080]);
+    expect(def.uniforms.uOmega.value).toBe(1.2);
+    expect(def.uniforms.uShadowSoftness.value).toBe(16.0);
+  });
+
+  it('should pack uniform parameters into a 32-byte Float32Array', () => {
+    const packed = ThreeSDFMaterial.packUniformBuffer({
+      time: 2.0,
+      omega: 1.3,
+      blendRadius: 0.4,
+      gyroidMix: 0.5,
+      resolution: [1280, 720],
+      shadowSoftness: 24.0,
+      ambientOcclusionSamples: 6.0,
+    });
+
+    expect(packed.length).toBe(8);
+    expect(packed.byteLength).toBe(32);
+    expect(packed[0]).toBe(2.0);
+    expect(packed[1]).toBeCloseTo(1.3, 5);
+    expect(packed[2]).toBeCloseTo(0.4, 5);
+    expect(packed[3]).toBeCloseTo(0.5, 5);
+    expect(packed[4]).toBe(1280);
+    expect(packed[5]).toBe(720);
+    expect(packed[6]).toBe(24.0);
+    expect(packed[7]).toBe(6.0);
   });
 });
