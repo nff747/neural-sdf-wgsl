@@ -140,3 +140,39 @@ describe('WGSL Shaders Integrity', () => {
     expect(sdfRaymarchShader).toContain('CameraParams');
   });
 });
+
+describe('SDF Smooth Min/Max with Weight Blending', () => {
+  it('should compute smooth minimum distance and interpolation weight factor', () => {
+    const k = 0.5;
+    // Equal distances: blend factor should be 0.5, distance shifted by -k/4
+    const resEqual = SDFMath.sminWithWeight(1.0, 1.0, k);
+    expect(resEqual.blend).toBeCloseTo(0.5, 5);
+    expect(resEqual.distance).toBeCloseTo(1.0 - k * 0.25, 5);
+
+    // d1 much smaller than d2: blend should be 1.0, distance equal to d1
+    const resD1Smaller = SDFMath.sminWithWeight(0.0, 10.0, k);
+    expect(resD1Smaller.blend).toBeCloseTo(1.0, 5);
+    expect(resD1Smaller.distance).toBeCloseTo(0.0, 5);
+
+    // Zero blend radius fallback to sharp minimum
+    const resSharp = SDFMath.sminWithWeight(2.0, 5.0, 0.0);
+    expect(resSharp.blend).toBe(1.0);
+    expect(resSharp.distance).toBe(2.0);
+  });
+
+  it('should compute smooth maximum distance and interpolation weight factor', () => {
+    const k = 0.5;
+    const resEqual = SDFMath.smaxWithWeight(1.0, 1.0, k);
+    expect(resEqual.blend).toBeCloseTo(0.5, 5);
+    expect(resEqual.distance).toBeCloseTo(1.0 + k * 0.25, 5);
+
+    const resD1Greater = SDFMath.smaxWithWeight(10.0, 0.0, k);
+    expect(resD1Greater.blend).toBeCloseTo(1.0, 5);
+    expect(resD1Greater.distance).toBeCloseTo(10.0, 5);
+
+    // Sharp maximum
+    const resSharp = SDFMath.smaxWithWeight(2.0, 5.0, 0.0);
+    expect(resSharp.blend).toBe(0.0);
+    expect(resSharp.distance).toBe(5.0);
+  });
+});
