@@ -176,3 +176,31 @@ describe('SDF Smooth Min/Max with Weight Blending', () => {
     expect(resSharp.distance).toBe(5.0);
   });
 });
+
+describe('Ambient Occlusion Tracing', () => {
+  it('should compute full ambient brightness on convex planar/isolated sphere surface', () => {
+    const sphereRadius = 2.0;
+    const mapFn = (x: number, y: number, z: number) => Math.hypot(x, y, z) - sphereRadius;
+
+    // Normal at top of sphere is (0, 1, 0)
+    const p: [number, number, number] = [0, sphereRadius, 0];
+    const n: [number, number, number] = [0, 1, 0];
+
+    const ao = CPUReferenceRaymarcher.calcAmbientOcclusion(mapFn, p, n);
+    // On a purely convex sphere, distance along normal is greater than or equal to sample distance,
+    // so ambient occlusion factor should be 1.0 (unoccluded)
+    expect(ao).toBeCloseTo(1.0, 2);
+  });
+
+  it('should decrease ambient occlusion factor inside concavities or narrow crevice', () => {
+    // Two close parallel planes at x = -0.05 and x = 0.05
+    const mapFn = (x: number, _y: number, _z: number) => Math.max(-x - 0.05, x - 0.05);
+
+    // Deep in the crevice at x = 0, facing upwards (0, 1, 0)
+    const p: [number, number, number] = [0, 0, 0];
+    const n: [number, number, number] = [0, 1, 0];
+
+    const ao = CPUReferenceRaymarcher.calcAmbientOcclusion(mapFn, p, n, 0.2, 5);
+    expect(ao).toBeLessThan(1.0);
+  });
+});
