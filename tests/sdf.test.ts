@@ -204,3 +204,32 @@ describe('Ambient Occlusion Tracing', () => {
     expect(ao).toBeLessThan(1.0);
   });
 });
+
+describe('SDFScene Bounding Sphere Acceleration', () => {
+  it('should enclose multiple primitives in a bounding sphere', () => {
+    const scene = new SDFScene();
+    scene.add('s1', { type: 'sphere', position: [-2, 0, 0], radius: 1.0 });
+    scene.add('s2', { type: 'sphere', position: [2, 0, 0], radius: 1.0 });
+
+    const bs = scene.computeBoundingSphere();
+    expect(bs.center[0]).toBeCloseTo(0.0, 5);
+    expect(bs.center[1]).toBeCloseTo(0.0, 5);
+    expect(bs.center[2]).toBeCloseTo(0.0, 5);
+    // Extents are from -3 to +3, so bounding radius must be >= 3.0
+    expect(bs.radius).toBeGreaterThanOrEqual(3.0);
+  });
+
+  it('should test ray intersection against scene bounding sphere', () => {
+    const scene = new SDFScene();
+    scene.add('box', { type: 'box', position: [0, 0, 0], halfExtents: [1, 1, 1] });
+    const bs = scene.computeBoundingSphere();
+
+    // Ray pointing directly at sphere center from z = 10
+    const hitRay = scene.intersectsRay([0, 0, 10], [0, 0, -1], bs);
+    expect(hitRay).toBe(true);
+
+    // Ray pointing completely away from sphere
+    const missRay = scene.intersectsRay([0, 0, 10], [1, 0, 0], bs);
+    expect(missRay).toBe(false);
+  });
+});
