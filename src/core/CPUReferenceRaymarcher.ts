@@ -1,7 +1,7 @@
 /**
  * Headless CPU Reference Raymarcher.
  * Provides verifiable over-relaxed sphere tracing, soft shadow calculation,
- * and normal calculation for test environments without a physical GPU.
+ * normal gradient estimators, and ambient occlusion for test environments without a physical GPU.
  */
 
 import { SDFMath } from '../utils/math';
@@ -56,7 +56,6 @@ export class CPUReferenceRaymarcher {
       }
     }
 
-
     return {
       hit: false,
       distance: t,
@@ -92,5 +91,33 @@ export class CPUReferenceRaymarcher {
     }
 
     return Math.max(0.0, Math.min(1.0, res));
+  }
+
+  /**
+   * Evaluates Multi-Sample Ambient Occlusion along the surface normal vector.
+   * Steps outward by incremental delta distances and measures field occlusion.
+   */
+  public static calcAmbientOcclusion(
+    mapFn: (x: number, y: number, z: number) => number,
+    point: [number, number, number],
+    normal: [number, number, number],
+    stepSize: number = 0.05,
+    sampleCount: number = 5
+  ): number {
+    let occlusion = 0.0;
+    let weight = 1.0;
+
+    for (let i = 1; i <= sampleCount; i++) {
+      const dist = i * stepSize;
+      const sx = point[0] + normal[0] * dist;
+      const sy = point[1] + normal[1] * dist;
+      const sz = point[2] + normal[2] * dist;
+
+      const surfaceDist = mapFn(sx, sy, sz);
+      occlusion += (dist - surfaceDist) * weight;
+      weight *= 0.5;
+    }
+
+    return Math.max(0.0, Math.min(1.0, 1.0 - 2.0 * occlusion));
   }
 }
