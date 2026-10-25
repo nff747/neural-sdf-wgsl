@@ -70,6 +70,30 @@ export class SDFMath {
     return (d2 * (1.0 - h) + (-d1) * h) + k * h * (1.0 - h);
   }
 
+  /**
+   * Smooth minimum (smin) returning combined distance and blend weight factor h in [0, 1].
+   */
+  public static sminWithWeight(d1: number, d2: number, k: number): { distance: number; blend: number } {
+    if (k <= 1e-6) {
+      return { distance: Math.min(d1, d2), blend: d1 < d2 ? 1.0 : 0.0 };
+    }
+    const h = Math.max(0.0, Math.min(1.0, 0.5 + 0.5 * (d2 - d1) / k));
+    const dist = (d2 * (1.0 - h) + d1 * h) - k * h * (1.0 - h);
+    return { distance: dist, blend: h };
+  }
+
+  /**
+   * Smooth maximum (smax) returning combined distance and blend weight factor h in [0, 1].
+   */
+  public static smaxWithWeight(d1: number, d2: number, k: number): { distance: number; blend: number } {
+    if (k <= 1e-6) {
+      return { distance: Math.max(d1, d2), blend: d1 > d2 ? 1.0 : 0.0 };
+    }
+    const h = Math.max(0.0, Math.min(1.0, 0.5 - 0.5 * (d2 - d1) / k));
+    const dist = (d2 * (1.0 - h) + d1 * h) + k * h * (1.0 - h);
+    return { distance: dist, blend: h };
+  }
+
   public static calcTetrahedronNormal(
     mapFn: (x: number, y: number, z: number) => number,
     x: number, y: number, z: number,
