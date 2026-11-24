@@ -2,6 +2,8 @@
 
 # Neural SDF WGSL 🧠📐
 
+[![Lunar Paradox](https://img.shields.io/badge/Organization-Lunar_Paradox-0a0e1a?style=for-the-badge&logo=probot&logoColor=d7b886)](https://lunarparadox.com)
+
 > **Hardware-Accelerated Real-Time Implicit Signed Distance Field (SDF) Raymarcher & Dynamic CSG Boolean Engine in WebGPU / WGSL.**
 
 [![WebGPU](https://img.shields.io/badge/WebGPU-Compute_Pipelines-00f0ff?style=for-the-badge&logo=webgpu)](https://www.w3.org/TR/webgpu/)
@@ -152,3 +154,7 @@ neural-sdf-wgsl/
 ## 📜 License
 
 Apache License 2.0 © 2026 nff747. Open-sourced under the Apache License, Version 2.0.
+
+---
+
+*A component of the [Lunar Paradox](https://lunarparadox.com) applied systems & graphics laboratory. Engineered by nff747.*
